@@ -25,7 +25,7 @@ jobs:
       run: flutter build apk --release --no-tree-shake-icons
 
     - name: Upload Beta APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wake_senpai_beta_apk
         path: build/app/outputs/flutter-apk/app-release.apk

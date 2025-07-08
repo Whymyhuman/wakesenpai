@@ -7,13 +7,27 @@ import 'package:wake_senpai/models/alarm.dart';
 import 'package:wake_senpai/services/local_db_service.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:wake_senpai/services/alarm_service.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize notifications
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  
+  // Initialize Hive
   await Hive.initFlutter();
   Hive.registerAdapter(AlarmAdapter());
   Hive.registerAdapter(TimeOfDayCustomAdapter());
+  
+  // Initialize Android Alarm Manager
   await AndroidAlarmManager.initialize();
+  
   runApp(const MyApp());
 }
 
@@ -30,10 +44,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'WakeSenpai',
         theme: ThemeData(
-          primarySwatch: Colors.blueGrey,
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: HomeScreen(),
+        home: const HomeScreen(),
       ),
     );
   }

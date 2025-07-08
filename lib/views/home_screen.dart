@@ -23,7 +23,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AlarmListScreen()),
+                  MaterialPageRoute(builder: (context) => const AlarmListScreen()),
                 );
               },
               child: const Text('Lihat Alarm'),

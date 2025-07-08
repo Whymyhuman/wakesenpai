@@ -44,7 +44,7 @@ Untuk membangun file APK rilis untuk Android secara offline:
 1.  Pastikan Anda berada di direktori root proyek (`wake_senpai`).
 2.  Jalankan perintah berikut:
     ```bash
-    flutter build apk --release --no-tree-shake-icons
+    flutter build apk --release
     ```
 3.  File APK yang sudah jadi akan ditemukan di `build/app/outputs/flutter-apk/app-release.apk`.
 

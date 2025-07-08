@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:async';
+import 'dart:math' as math;
 
 class GestureChallengeScreen extends StatefulWidget {
   final VoidCallback onChallengeCompleted;
@@ -23,7 +24,7 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
     super.initState();
     _accelerometerSubscription = accelerometerEventStream(samplingPeriod: SensorInterval.normalInterval).listen(
       (AccelerometerEvent event) {
-        final double acceleration = (event.x.abs() + event.y.abs() + event.z.abs());
+        final double acceleration = math.sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
         if (acceleration > _shakeThreshold) {
           setState(() {
             _shakeCount++;
@@ -34,6 +35,9 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
             Navigator.pop(context);
           }
         }
+      },
+      onError: (error) {
+        print('Accelerometer error: $error');
       },
     );
   }

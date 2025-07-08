@@ -4,21 +4,26 @@ import 'package:wake_senpai/models/alarm.dart';
 import 'package:wake_senpai/views/wake_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:wake_senpai/services/local_db_service.dart'; // Import LocalDbService
+import 'package:flutter/material.dart' as material;
 
 // Entry point untuk alarm yang dipicu oleh AndroidAlarmManager
 @pragma('vm:entry-point')
 void alarmCallback(int id) async {
   WidgetsFlutterBinding.ensureInitialized();
   // Inisialisasi LocalDbService untuk mengambil data alarm
-  final localDbService = LocalDbService();
-  await localDbService.init();
+  try {
+    final localDbService = LocalDbService();
+    await localDbService.init();
 
-  final alarm = localDbService.getAlarmById(id); // Asumsi ada method getAlarmById
+    final alarm = localDbService.getAlarmById(id);
 
-  if (alarm != null) {
-    runApp(MaterialApp(home: WakeScreen(alarm: alarm)));
-  } else {
-    print('Alarm dengan ID $id tidak ditemukan.');
+    if (alarm != null) {
+      runApp(material.MaterialApp(home: WakeScreen(alarm: alarm)));
+    } else {
+      print('Alarm dengan ID $id tidak ditemukan.');
+    }
+  } catch (e) {
+    print('Error in alarm callback: $e');
   }
 }
 
@@ -54,7 +59,8 @@ class AlarmService {
     );
 
     // Tampilkan notifikasi sebagai fallback atau konfirmasi
-    await flutterLocalNotificationsPlugin.show(
+    try {
+      await flutterLocalNotificationsPlugin.show(
       alarm.id,
       'Alarm WakeSenpai',
       'Alarm akan berbunyi pada ${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
@@ -68,7 +74,10 @@ class AlarmService {
           fullScreenIntent: true,
         ),
       ),
-    );
+      );
+    } catch (e) {
+      print('Error showing notification: $e');
+    }
   }
 
   Future<void> cancelAlarm(int id) async {

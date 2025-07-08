@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wake_senpai/models/alarm.dart';
 import 'package:wake_senpai/viewmodels/alarm_viewmodel.dart';
+import 'package:flutter/material.dart' as material;
 
 class AlarmEditScreen extends StatefulWidget {
   final Alarm? alarm;
@@ -36,9 +36,9 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
   }
 
   Future<void> _pickTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
+    final material.TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: _selectedTime.hour, minute: _selectedTime.minute),
+      initialTime: material.TimeOfDay(hour: _selectedTime.hour, minute: _selectedTime.minute),
     );
     if (picked != null && picked != _selectedTime) {
       setState(() {
@@ -123,5 +123,3 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
     );
   }
 }
-
-

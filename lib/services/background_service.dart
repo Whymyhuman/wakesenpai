@@ -5,9 +5,9 @@ class BackgroundService {
     final now = DateTime.now();
     // Contoh sederhana: pagi (6-18) dan malam (18-6)
     if (now.hour >= 6 && now.hour < 18) {
-      return 'assets/images/morning_background.png'; // Koridor sekolah
+      return 'assets/images/senpai_chibi_01.png'; // Gunakan gambar yang ada
     } else {
-      return 'assets/images/night_background.png'; // Kota neon
+      return 'assets/images/senpai_chibi_02.png'; // Gunakan gambar yang ada
     }
   }
 }

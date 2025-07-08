@@ -1,5 +1,5 @@
-
 import 'package:hive/hive.dart';
+import 'package:flutter/material.dart' as material;
 
 part 'alarm.g.dart';
 
@@ -9,7 +9,7 @@ class Alarm extends HiveObject {
   late int id;
 
   @HiveField(1)
-  late TimeOfDay time;
+  late TimeOfDayCustom time;
 
   @HiveField(2)
   late bool isActive;
@@ -33,18 +33,18 @@ class Alarm extends HiveObject {
   });
 }
 
-class TimeOfDay {
+class TimeOfDayCustom {
   final int hour;
   final int minute;
 
-  TimeOfDay({required this.hour, required this.minute});
+  TimeOfDayCustom({required this.hour, required this.minute});
 
   Map<String, dynamic> toJson() => {
         'hour': hour,
         'minute': minute,
       };
 
-  factory TimeOfDay.fromJson(Map<String, dynamic> json) => TimeOfDay(
+  factory TimeOfDayCustom.fromJson(Map<String, dynamic> json) => TimeOfDayCustom(
         hour: json['hour'],
         minute: json['minute'],
       );
@@ -53,5 +53,4 @@ class TimeOfDay {
 
 
 
-// Perbaikan simulasi untuk alarm.dart
 

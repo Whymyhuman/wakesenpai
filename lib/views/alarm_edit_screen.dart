@@ -14,7 +14,7 @@ class AlarmEditScreen extends StatefulWidget {
 }
 
 class _AlarmEditScreenState extends State<AlarmEditScreen> {
-  late TimeOfDay _selectedTime;
+  late TimeOfDayCustom _selectedTime;
   late bool _isRepeatingDaily;
   late String _selectedSound;
   late String _selectedChallengeType;
@@ -23,12 +23,12 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
   void initState() {
     super.initState();
     if (widget.alarm != null) {
-      _selectedTime = TimeOfDay(hour: widget.alarm!.time.hour, minute: widget.alarm!.time.minute);
+      _selectedTime = TimeOfDayCustom(hour: widget.alarm!.time.hour, minute: widget.alarm!.time.minute);
       _isRepeatingDaily = widget.alarm!.isRepeatingDaily;
       _selectedSound = widget.alarm!.soundPath;
       _selectedChallengeType = widget.alarm!.challengeType;
     } else {
-      _selectedTime = TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
+      _selectedTime = TimeOfDayCustom(hour: DateTime.now().hour, minute: DateTime.now().minute);
       _isRepeatingDaily = false;
       _selectedSound = 'default.mp3'; // Default sound
       _selectedChallengeType = 'puzzle'; // Default challenge
@@ -42,7 +42,7 @@ class _AlarmEditScreenState extends State<AlarmEditScreen> {
     );
     if (picked != null && picked != _selectedTime) {
       setState(() {
-        _selectedTime = TimeOfDay(hour: picked.hour, minute: picked.minute);
+        _selectedTime = TimeOfDayCustom(hour: picked.hour, minute: picked.minute);
       });
     }
   }

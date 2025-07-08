@@ -17,7 +17,7 @@ void main() {
       // Pastikan alarm dijadwalkan dengan parameter yang benar
       final testAlarm = Alarm(
         id: 1,
-        time: TimeOfDay(hour: 10, minute: 30),
+        time: TimeOfDayCustom(hour: 10, minute: 30),
         isActive: true,
         isRepeatingDaily: false,
         soundPath: 'default.mp3',

@@ -12,7 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(AlarmAdapter());
-  Hive.registerAdapter(TimeOfDayAdapter());
+  Hive.registerAdapter(TimeOfDayCustomAdapter());
   await AndroidAlarmManager.initialize();
   runApp(const MyApp());
 }

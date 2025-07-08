@@ -20,7 +20,7 @@ class AlarmViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addAlarm(TimeOfDay time, bool isRepeatingDaily, String soundPath, String challengeType) async {
+  Future<void> addAlarm(TimeOfDayCustom time, bool isRepeatingDaily, String soundPath, String challengeType) async {
     final newAlarm = Alarm(
       id: DateTime.now().millisecondsSinceEpoch, // ID unik
       time: time,

@@ -35,7 +35,7 @@ void main() {
       // TODO: Implementasi tes untuk getAlarms
       final alarm1 = Alarm(
         id: 1,
-        time: TimeOfDay(hour: 8, minute: 0),
+        time: TimeOfDayCustom(hour: 8, minute: 0),
         isActive: true,
         isRepeatingDaily: false,
         soundPath: 'sound1.mp3',
@@ -52,7 +52,7 @@ void main() {
       // TODO: Implementasi tes untuk saveAlarm
       final alarm = Alarm(
         id: 2,
-        time: TimeOfDay(hour: 9, minute: 30),
+        time: TimeOfDayCustom(hour: 9, minute: 30),
         isActive: true,
         isRepeatingDaily: true,
         soundPath: 'sound2.mp3',
@@ -68,7 +68,7 @@ void main() {
       // TODO: Implementasi tes untuk deleteAlarm
       final alarm = Alarm(
         id: 3,
-        time: TimeOfDay(hour: 10, minute: 0),
+        time: TimeOfDayCustom(hour: 10, minute: 0),
         isActive: false,
         isRepeatingDaily: false,
         soundPath: 'sound3.mp3',

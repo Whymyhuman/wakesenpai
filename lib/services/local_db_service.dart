@@ -5,7 +5,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wake_senpai/models/alarm.dart';
 import 'package:wake_senpai/models/user_stats.dart';
 
-part 'local_db_service.g.dart';
 
 class LocalDbService {
   late Box<Alarm> _alarmBox;
@@ -15,7 +14,7 @@ class LocalDbService {
   Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(AlarmAdapter());
-    Hive.registerAdapter(TimeOfDayAdapter());
+    Hive.registerAdapter(TimeOfDayCustomAdapter());
     Hive.registerAdapter(UserStatsAdapter());
 
     String? encryptionKeyString = await _secureStorage.read(key: 'hive_encryption_key');
@@ -55,32 +54,5 @@ class LocalDbService {
   }
 }
 
-@HiveType(typeId: 1)
-class TimeOfDayAdapter extends TypeAdapter<TimeOfDay> {
-  @override
-  final int typeId = 1;
-
-  @override
-  TimeOfDay read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return TimeOfDay(
-      hour: fields[0] as int,
-      minute: fields[1] as int,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, TimeOfDay obj) {
-    writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.hour)
-      ..writeByte(1)
-      ..write(obj.minute);
-  }
-}
 
 

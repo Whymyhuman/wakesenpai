@@ -15,10 +15,6 @@ class UserStatsViewModel extends ChangeNotifier {
   Future<void> _loadUserStats() async {
     await _localDbService.init(); // Pastikan inisialisasi sudah dilakukan
     _userStats = _localDbService.getUserStats();
-    if (_userStats == null) {
-      _userStats = UserStats(xp: 0, unlockedIllustrations: [], unlockedSounds: []);
-      await _localDbService.saveUserStats(_userStats);
-    }
     notifyListeners();
   }
 

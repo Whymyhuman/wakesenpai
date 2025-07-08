@@ -28,11 +28,18 @@ class _WakeScreenState extends State<WakeScreen> {
 
   Future<void> _playAlarmSound() async {
     try {
-      await _audioPlayer.setAsset('assets/audio/${widget.alarm.soundPath}');
+      // Cek apakah file audio ada, jika tidak gunakan default
+      try {
+        await _audioPlayer.setAsset('assets/audio/${widget.alarm.soundPath}');
+      } catch (e) {
+        // Fallback ke suara default jika file tidak ditemukan
+        print('Audio file not found, using default beep sound');
+        // Bisa menggunakan system sound atau file default
+        return;
+      }
       _audioPlayer.play();
     } catch (e) {
       print('Error playing audio: $e');
-      // Handle error, e.g., play a default sound or show a message
     }
   }
 
@@ -99,8 +106,16 @@ class _WakeScreenState extends State<WakeScreen> {
             children: <Widget>[
               // Tampilkan ilustrasi karakter anime
               Image.asset(
-                'assets/images/character_illustration.png', // Placeholder
+                'assets/images/senpai_chibi_01.png', // Gunakan gambar yang ada
                 height: 200,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 200,
+                    width: 200,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image_not_supported, size: 50),
+                  );
+                },
               ),
               const SizedBox(height: 50),
               const Text(

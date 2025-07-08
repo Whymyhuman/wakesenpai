@@ -14,9 +14,10 @@ class GestureChallengeScreen extends StatefulWidget {
 
 class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
   double _shakeCount = 0;
-  final double _shakeThreshold = 15.0;
+  final double _shakeThreshold = 12.0;
   final int _requiredShakes = 5;
   StreamSubscription? _accelerometerSubscription;
+  DateTime? _lastShakeTime;
 
   @override
   void initState() {
@@ -27,15 +28,24 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
   void _startListening() {
     _accelerometerSubscription = accelerometerEventStream().listen(
       (AccelerometerEvent event) {
+        final now = DateTime.now();
+        
+        // Prevent too frequent shake detection
+        if (_lastShakeTime != null && 
+            now.difference(_lastShakeTime!).inMilliseconds < 500) {
+          return;
+        }
+
         // Calculate total acceleration magnitude
         final double totalAcceleration = math.sqrt(
           event.x * event.x + event.y * event.y + event.z * event.z,
         );
         
-        // Remove gravity (approximately 9.8 m/s²)
+        // Remove gravity (approximately 9.8 m/s²) and get absolute value
         final double netAcceleration = (totalAcceleration - 9.8).abs();
         
         if (netAcceleration > _shakeThreshold) {
+          _lastShakeTime = now;
           setState(() {
             _shakeCount++;
           });
@@ -47,7 +57,7 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
         }
       },
       onError: (error) {
-        // Handle accelerometer error
+        debugPrint('Accelerometer error: $error');
       },
     );
   }
@@ -60,6 +70,8 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final progress = _shakeCount / _requiredShakes;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tantangan Goyang'),
@@ -81,19 +93,42 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
               'Goyangan: ${_shakeCount.toInt()}/$_requiredShakes',
               style: const TextStyle(fontSize: 20),
             ),
+            const SizedBox(height: 30),
+            
+            // Progress indicator
+            Container(
+              width: 200,
+              height: 20,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.transparent,
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            ),
+            
             const SizedBox(height: 50),
-            const Icon(
-              Icons.screen_rotation,
-              size: 100,
-              color: Colors.blue,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              transform: Matrix4.rotationZ(progress * 0.1),
+              child: const Icon(
+                Icons.screen_rotation,
+                size: 100,
+                color: Colors.blue,
+              ),
             ),
             const SizedBox(height: 50),
-            ElevatedButton(
-              onPressed: () {
-                widget.onChallengeCompleted();
-              },
-              child: const Text('Skip (Testing)'),
-            ),
+            
+            if (kDebugMode)
+              ElevatedButton(
+                onPressed: () {
+                  widget.onChallengeCompleted();
+                },
+                child: const Text('Skip (Debug Mode)'),
+              ),
           ],
         ),
       ),

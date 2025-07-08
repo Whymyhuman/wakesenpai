@@ -8,11 +8,16 @@ import 'views/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize database
-  await DatabaseService.instance.init();
-  
-  // Initialize alarm service
-  await AlarmService.instance.init();
+  try {
+    // Initialize database
+    await DatabaseService.instance.init();
+    
+    // Initialize alarm service
+    await AlarmService.instance.init();
+  } catch (e) {
+    // Handle initialization errors gracefully
+    debugPrint('Initialization error: $e');
+  }
   
   runApp(const MyApp());
 }
@@ -29,7 +34,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'WakeSenpai',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),

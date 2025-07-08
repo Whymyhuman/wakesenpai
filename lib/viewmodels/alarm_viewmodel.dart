@@ -13,12 +13,16 @@ class AlarmViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
   AlarmViewModel() {
     _loadAlarms();
   }
 
   Future<void> _loadAlarms() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
@@ -26,7 +30,8 @@ class AlarmViewModel extends ChangeNotifier {
       await _alarmService.init();
       _alarms = _db.getAlarms();
     } catch (e) {
-      // Handle error loading alarms
+      _errorMessage = 'Failed to load alarms: $e';
+      debugPrint('Error loading alarms: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -40,41 +45,67 @@ class AlarmViewModel extends ChangeNotifier {
     required String soundPath,
     required String challengeType,
   }) async {
-    final alarm = Alarm(
-      id: DateTime.now().millisecondsSinceEpoch,
-      hour: hour,
-      minute: minute,
-      isActive: true,
-      isRepeatingDaily: isRepeatingDaily,
-      soundPath: soundPath,
-      challengeType: challengeType,
-    );
+    try {
+      final alarm = Alarm(
+        id: DateTime.now().millisecondsSinceEpoch,
+        hour: hour,
+        minute: minute,
+        isActive: true,
+        isRepeatingDaily: isRepeatingDaily,
+        soundPath: soundPath,
+        challengeType: challengeType,
+      );
 
-    _alarms.add(alarm);
-    await _db.saveAlarm(alarm);
-    await _alarmService.scheduleAlarm(alarm);
-    notifyListeners();
+      _alarms.add(alarm);
+      await _db.saveAlarm(alarm);
+      await _alarmService.scheduleAlarm(alarm);
+      _errorMessage = null;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to add alarm: $e';
+      debugPrint('Error adding alarm: $e');
+      notifyListeners();
+    }
   }
 
   Future<void> updateAlarm(Alarm alarm) async {
-    await _db.saveAlarm(alarm);
-    if (alarm.isActive) {
-      await _alarmService.scheduleAlarm(alarm);
-    } else {
-      await _alarmService.cancelAlarm(alarm.id);
+    try {
+      await _db.saveAlarm(alarm);
+      if (alarm.isActive) {
+        await _alarmService.scheduleAlarm(alarm);
+      } else {
+        await _alarmService.cancelAlarm(alarm.id);
+      }
+      _errorMessage = null;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to update alarm: $e';
+      debugPrint('Error updating alarm: $e');
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> deleteAlarm(int id) async {
-    _alarms.removeWhere((alarm) => alarm.id == id);
-    await _db.deleteAlarm(id);
-    await _alarmService.cancelAlarm(id);
-    notifyListeners();
+    try {
+      _alarms.removeWhere((alarm) => alarm.id == id);
+      await _db.deleteAlarm(id);
+      await _alarmService.cancelAlarm(id);
+      _errorMessage = null;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to delete alarm: $e';
+      debugPrint('Error deleting alarm: $e');
+      notifyListeners();
+    }
   }
 
   void toggleAlarm(Alarm alarm) {
     alarm.isActive = !alarm.isActive;
     updateAlarm(alarm);
+  }
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
   }
 }

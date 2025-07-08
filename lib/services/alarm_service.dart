@@ -14,53 +14,62 @@ class AlarmService {
   Future<void> init() async {
     if (_isInitialized) return;
 
-    // Initialize timezone
-    tz_data.initializeTimeZones();
-    
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
-    
-    await _notifications.initialize(initSettings);
-    
-    // Request permissions for Android 13+
-    await _notifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
-    
-    _isInitialized = true;
+    try {
+      // Initialize timezone
+      tz_data.initializeTimeZones();
+      
+      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const iosSettings = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+      const initSettings = InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+      );
+      
+      await _notifications.initialize(initSettings);
+      
+      // Request permissions for Android 13+
+      await _notifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+      
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint('AlarmService initialization error: $e');
+      _isInitialized = false;
+    }
   }
 
   Future<void> scheduleAlarm(Alarm alarm) async {
     if (!_isInitialized) await init();
 
-    await _notifications.zonedSchedule(
-      alarm.id,
-      'WakeSenpai Alarm',
-      'Waktunya bangun! ${alarm.timeString}',
-      _nextInstanceOfTime(alarm.hour, alarm.minute),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'alarm_channel',
-          'Alarm Notifications',
-          channelDescription: 'Notifications for WakeSenpai alarms',
-          importance: Importance.max,
-          priority: Priority.high,
-          fullScreenIntent: true,
-          category: AndroidNotificationCategory.alarm,
+    try {
+      await _notifications.zonedSchedule(
+        alarm.id,
+        'WakeSenpai Alarm',
+        'Waktunya bangun! ${alarm.timeString}',
+        _nextInstanceOfTime(alarm.hour, alarm.minute),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'alarm_channel',
+            'Alarm Notifications',
+            channelDescription: 'Notifications for WakeSenpai alarms',
+            importance: Importance.max,
+            priority: Priority.high,
+            fullScreenIntent: true,
+            category: AndroidNotificationCategory.alarm,
+          ),
         ),
-      ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: alarm.isRepeatingDaily ? DateTimeComponents.time : null,
-    );
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: alarm.isRepeatingDaily ? DateTimeComponents.time : null,
+      );
+    } catch (e) {
+      debugPrint('Schedule alarm error: $e');
+    }
   }
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
@@ -75,6 +84,10 @@ class AlarmService {
   }
 
   Future<void> cancelAlarm(int id) async {
-    await _notifications.cancel(id);
+    try {
+      await _notifications.cancel(id);
+    } catch (e) {
+      debugPrint('Cancel alarm error: $e');
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/alarm.dart';
 import '../models/user_stats.dart';
@@ -29,41 +30,65 @@ class DatabaseService {
       
       _isInitialized = true;
     } catch (e) {
-      // Handle error silently or use proper logging
+      debugPrint('Database initialization error: $e');
       _isInitialized = false;
     }
   }
 
   // Alarm operations
   List<Alarm> getAlarms() {
-    return _alarmBox?.values.toList() ?? [];
+    if (!_isInitialized || _alarmBox == null) return [];
+    return _alarmBox!.values.toList();
   }
 
   Alarm? getAlarmById(int id) {
-    return _alarmBox?.get(id);
+    if (!_isInitialized || _alarmBox == null) return null;
+    return _alarmBox!.get(id);
   }
 
   Future<void> saveAlarm(Alarm alarm) async {
-    await _alarmBox?.put(alarm.id, alarm);
+    if (!_isInitialized || _alarmBox == null) return;
+    try {
+      await _alarmBox!.put(alarm.id, alarm);
+    } catch (e) {
+      debugPrint('Save alarm error: $e');
+    }
   }
 
   Future<void> deleteAlarm(int id) async {
-    await _alarmBox?.delete(id);
+    if (!_isInitialized || _alarmBox == null) return;
+    try {
+      await _alarmBox!.delete(id);
+    } catch (e) {
+      debugPrint('Delete alarm error: $e');
+    }
   }
 
   // User stats operations
   UserStats getUserStats() {
-    return _userStatsBox?.get('user_stats') ?? 
+    if (!_isInitialized || _userStatsBox == null) {
+      return UserStats(xp: 0, unlockedIllustrations: [], unlockedSounds: []);
+    }
+    return _userStatsBox!.get('user_stats') ?? 
            UserStats(xp: 0, unlockedIllustrations: [], unlockedSounds: []);
   }
 
   Future<void> saveUserStats(UserStats userStats) async {
-    await _userStatsBox?.put('user_stats', userStats);
+    if (!_isInitialized || _userStatsBox == null) return;
+    try {
+      await _userStatsBox!.put('user_stats', userStats);
+    } catch (e) {
+      debugPrint('Save user stats error: $e');
+    }
   }
 
   Future<void> close() async {
-    await _alarmBox?.close();
-    await _userStatsBox?.close();
-    _isInitialized = false;
+    try {
+      await _alarmBox?.close();
+      await _userStatsBox?.close();
+      _isInitialized = false;
+    } catch (e) {
+      debugPrint('Database close error: $e');
+    }
   }
 }

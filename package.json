@@ -1,0 +1,22 @@
+{
+  "name": "wake-senpai",
+  "version": "1.0.0",
+  "description": "WakeSenpai Flutter Project Scripts",
+  "scripts": {
+    "clean": "bash scripts/clean.sh",
+    "quick-clean": "bash scripts/quick-clean.sh",
+    "deep-clean": "bash scripts/deep-clean.sh",
+    "build": "flutter build apk --release",
+    "test": "flutter test",
+    "analyze": "flutter analyze",
+    "format": "dart format .",
+    "deps": "flutter pub get",
+    "upgrade": "flutter pub upgrade",
+    "run": "flutter run",
+    "setup": "npm run clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs",
+    "doctor": "flutter doctor -v"
+  },
+  "keywords": ["flutter", "dart", "mobile", "alarm", "anime"],
+  "author": "WakeSenpai Team",
+  "license": "MIT"
+}

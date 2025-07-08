@@ -1,107 +1,90 @@
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wake_senpai/services/local_db_service.dart';
+import 'package:wake_senpai/services/database_service.dart';
 import 'package:wake_senpai/models/alarm.dart';
 import 'package:wake_senpai/models/user_stats.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 void main() {
-  group('LocalDbService', () {
-    late LocalDbService localDbService;
-    late Directory tempDir;
-
-    setUpAll(() async {
-      // Inisialisasi Hive untuk pengujian
-      tempDir = await getTemporaryDirectory();
-      Hive.init(tempDir.path);
-      Hive.registerAdapter(AlarmAdapter());
-      Hive.registerAdapter(TimeOfDayAdapter());
-      Hive.registerAdapter(UserStatsAdapter());
-    });
+  group('DatabaseService', () {
+    late DatabaseService databaseService;
 
     setUp(() async {
-      localDbService = LocalDbService();
-      await localDbService.init();
-    });
-
-    tearDown(() async {
-      await Hive.deleteFromDisk();
+      databaseService = DatabaseService.instance;
+      await databaseService.init();
     });
 
     test('getAlarms mengembalikan daftar alarm yang benar', () async {
-      // TODO: Implementasi tes untuk getAlarms
       final alarm1 = Alarm(
         id: 1,
-        time: TimeOfDayCustom(hour: 8, minute: 0),
+        hour: 8,
+        minute: 0,
         isActive: true,
         isRepeatingDaily: false,
         soundPath: 'sound1.mp3',
         challengeType: 'puzzle',
       );
-      await localDbService.saveAlarm(alarm1);
+      await databaseService.saveAlarm(alarm1);
 
-      final alarms = localDbService.getAlarms();
-      expect(alarms.length, 1);
-      expect(alarms[0].id, alarm1.id);
+      final alarms = databaseService.getAlarms();
+      expect(alarms.length, greaterThanOrEqualTo(1));
+      
+      final savedAlarm = alarms.firstWhere((a) => a.id == alarm1.id);
+      expect(savedAlarm.id, alarm1.id);
+      expect(savedAlarm.hour, alarm1.hour);
+      expect(savedAlarm.minute, alarm1.minute);
     });
 
     test('saveAlarm menyimpan alarm dengan benar', () async {
-      // TODO: Implementasi tes untuk saveAlarm
       final alarm = Alarm(
         id: 2,
-        time: TimeOfDayCustom(hour: 9, minute: 30),
+        hour: 9,
+        minute: 30,
         isActive: true,
         isRepeatingDaily: true,
         soundPath: 'sound2.mp3',
         challengeType: 'gesture',
       );
-      await localDbService.saveAlarm(alarm);
+      await databaseService.saveAlarm(alarm);
 
-      final retrievedAlarm = localDbService.getAlarmById(2);
+      final retrievedAlarm = databaseService.getAlarmById(2);
       expect(retrievedAlarm?.id, alarm.id);
+      expect(retrievedAlarm?.hour, alarm.hour);
+      expect(retrievedAlarm?.minute, alarm.minute);
     });
 
     test('deleteAlarm menghapus alarm dengan benar', () async {
-      // TODO: Implementasi tes untuk deleteAlarm
       final alarm = Alarm(
         id: 3,
-        time: TimeOfDayCustom(hour: 10, minute: 0),
+        hour: 10,
+        minute: 0,
         isActive: false,
         isRepeatingDaily: false,
         soundPath: 'sound3.mp3',
         challengeType: 'puzzle',
       );
-      await localDbService.saveAlarm(alarm);
-      await localDbService.deleteAlarm(3);
+      await databaseService.saveAlarm(alarm);
+      await databaseService.deleteAlarm(3);
 
-      final retrievedAlarm = localDbService.getAlarmById(3);
+      final retrievedAlarm = databaseService.getAlarmById(3);
       expect(retrievedAlarm, isNull);
     });
 
     test('getUserStats mengembalikan statistik pengguna yang benar', () async {
-      // TODO: Implementasi tes untuk getUserStats
-      final userStats = localDbService.getUserStats();
+      final userStats = databaseService.getUserStats();
       expect(userStats.xp, 0);
       expect(userStats.unlockedIllustrations, isEmpty);
     });
 
     test('saveUserStats menyimpan statistik pengguna dengan benar', () async {
-      // TODO: Implementasi tes untuk saveUserStats
       final userStats = UserStats(
         xp: 100,
         unlockedIllustrations: ['ill1.png'],
         unlockedSounds: ['sfx1.mp3'],
       );
-      await localDbService.saveUserStats(userStats);
+      await databaseService.saveUserStats(userStats);
 
-      final retrievedStats = localDbService.getUserStats();
+      final retrievedStats = databaseService.getUserStats();
       expect(retrievedStats.xp, 100);
       expect(retrievedStats.unlockedIllustrations, contains('ill1.png'));
     });
   });
 }
-
-

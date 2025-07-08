@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wake_senpai/models/user_stats.dart';
-import 'package:wake_senpai/services/local_db_service.dart';
+import '../models/user_stats.dart';
+import '../services/local_db_service.dart';
 
 class UserStatsViewModel extends ChangeNotifier {
-  final LocalDbService _localDbService = LocalDbService();
+  final LocalDbService _localDbService = LocalDbService.instance;
   late UserStats _userStats;
 
   UserStats get userStats => _userStats;

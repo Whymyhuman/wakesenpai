@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wake_senpai/services/habit_predictor.dart';
+import '../services/habit_predictor.dart';
 
 class HabitPredictorViewModel extends ChangeNotifier {
   final HabitPredictorService _habitPredictorService = HabitPredictorService();

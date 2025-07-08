@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wake_senpai/services/database_service.dart';
-import 'package:wake_senpai/models/alarm.dart';
-import 'package:wake_senpai/models/user_stats.dart';
+import '../lib/services/database_service.dart';
+import '../lib/models/alarm.dart';
+import '../lib/models/user_stats.dart';
 
 void main() {
   group('DatabaseService', () {

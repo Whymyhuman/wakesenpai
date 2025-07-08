@@ -1,4 +1,3 @@
-
 class HabitPredictorService {
   // Placeholder untuk TensorFlow Lite interpreter
   // Karena tflite_flutter mungkin tidak kompatibel di semua platform
@@ -22,8 +21,6 @@ class HabitPredictorService {
 
   void dispose() {
     // TODO: Cleanup resources
-    print('Disposing habit predictor service');
+    // print('Disposing habit predictor service');
   }
 }
-
-

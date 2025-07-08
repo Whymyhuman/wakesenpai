@@ -27,11 +27,15 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
   void _startListening() {
     _accelerometerSubscription = accelerometerEventStream().listen(
       (AccelerometerEvent event) {
-        final double acceleration = math.sqrt(
-          event.x * event.x + event.y * event.y + event.z * event.z
+        // Calculate total acceleration magnitude
+        final double totalAcceleration = math.sqrt(
+          event.x * event.x + event.y * event.y + event.z * event.z,
         );
         
-        if (acceleration > _shakeThreshold) {
+        // Remove gravity (approximately 9.8 m/s²)
+        final double netAcceleration = (totalAcceleration - 9.8).abs();
+        
+        if (netAcceleration > _shakeThreshold) {
           setState(() {
             _shakeCount++;
           });

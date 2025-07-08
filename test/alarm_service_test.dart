@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wake_senpai/services/alarm_service.dart';
-import 'package:wake_senpai/models/alarm.dart';
+import '../lib/services/alarm_service.dart';
+import '../lib/models/alarm.dart';
 
 void main() {
   group('AlarmService', () {

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'services/database_service.dart';
 import 'viewmodels/alarm_viewmodel.dart';
 import 'views/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize database
+  await DatabaseService.instance.init();
+  
   runApp(const MyApp());
 }
 

@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:wake_senpai/models/alarm.dart';
-import 'package:wake_senpai/models/user_stats.dart';
+import '../models/alarm.dart';
+import '../models/user_stats.dart';
 
 class LocalDbService {
   static LocalDbService? _instance;
@@ -26,9 +26,6 @@ class LocalDbService {
         Hive.registerAdapter(AlarmAdapter());
       }
       if (!Hive.isAdapterRegistered(1)) {
-        Hive.registerAdapter(TimeOfDayCustomAdapter());
-      }
-      if (!Hive.isAdapterRegistered(2)) {
         Hive.registerAdapter(UserStatsAdapter());
       }
 

@@ -5,7 +5,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wake_senpai/models/alarm.dart';
 import 'package:wake_senpai/models/user_stats.dart';
 
-
 class LocalDbService {
   late Box<Alarm> _alarmBox;
   late Box<UserStats> _userStatsBox;
@@ -13,9 +12,17 @@ class LocalDbService {
 
   Future<void> init() async {
     await Hive.initFlutter();
-    Hive.registerAdapter(AlarmAdapter());
-    Hive.registerAdapter(TimeOfDayCustomAdapter());
-    Hive.registerAdapter(UserStatsAdapter());
+    
+    // Register adapters only if not already registered
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(AlarmAdapter());
+    }
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(TimeOfDayCustomAdapter());
+    }
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(UserStatsAdapter());
+    }
 
     String? encryptionKeyString = await _secureStorage.read(key: 'hive_encryption_key');
     if (encryptionKeyString == null) {
@@ -53,6 +60,3 @@ class LocalDbService {
     await _userStatsBox.put('user_stats_key', userStats);
   }
 }
-
-
-

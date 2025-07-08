@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_drag_and_drop/flutter_drag_and_drop.dart';
 
 class PuzzleChallengeScreen extends StatefulWidget {
   final VoidCallback onChallengeCompleted;
@@ -11,43 +10,126 @@ class PuzzleChallengeScreen extends StatefulWidget {
 }
 
 class _PuzzleChallengeScreenState extends State<PuzzleChallengeScreen> {
-  // TODO: Implementasi logika puzzle game
-  // Misalnya, membagi gambar menjadi potongan-potongan dan mengacaknya
-  // Kemudian, biarkan pengguna menyeret dan menjatuhkan potongan ke posisi yang benar
+  List<int> puzzlePieces = [1, 2, 3, 4, 5, 6, 7, 8, 0]; // 0 represents empty space
+  List<int> correctOrder = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+  
+  @override
+  void initState() {
+    super.initState();
+    _shufflePuzzle();
+  }
+  
+  void _shufflePuzzle() {
+    puzzlePieces.shuffle();
+    setState(() {});
+  }
+  
+  void _movePiece(int index) {
+    int emptyIndex = puzzlePieces.indexOf(0);
+    
+    // Check if the tapped piece is adjacent to empty space
+    if (_isAdjacent(index, emptyIndex)) {
+      setState(() {
+        // Swap the piece with empty space
+        int temp = puzzlePieces[index];
+        puzzlePieces[index] = puzzlePieces[emptyIndex];
+        puzzlePieces[emptyIndex] = temp;
+      });
+      
+      // Check if puzzle is solved
+      if (_isPuzzleSolved()) {
+        widget.onChallengeCompleted();
+        Navigator.pop(context);
+      }
+    }
+  }
+  
+  bool _isAdjacent(int index1, int index2) {
+    int row1 = index1 ~/ 3;
+    int col1 = index1 % 3;
+    int row2 = index2 ~/ 3;
+    int col2 = index2 % 3;
+    
+    return (row1 == row2 && (col1 - col2).abs() == 1) ||
+           (col1 == col2 && (row1 - row2).abs() == 1);
+  }
+  
+  bool _isPuzzleSolved() {
+    for (int i = 0; i < puzzlePieces.length; i++) {
+      if (puzzlePieces[i] != correctOrder[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tantangan Puzzle'),
-        automaticallyImplyLeading: false, // Sembunyikan tombol kembali
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _shufflePuzzle,
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Susun potongan gambar ini!',
+              'Susun angka 1-8 dengan benar!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            // Placeholder untuk area puzzle
             Container(
               width: 300,
               height: 300,
-              color: Colors.grey[300],
-              child: const Center(
-                child: Text('Area Puzzle (Implementasi Drag and Drop)'),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
+                itemCount: 9,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () => _movePiece(index),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        color: puzzlePieces[index] == 0 
+                            ? Colors.grey[300] 
+                            : Colors.blue[100],
+                      ),
+                      child: Center(
+                        child: puzzlePieces[index] == 0
+                            ? null
+                            : Text(
+                                '${puzzlePieces[index]}',
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Simulasi tantangan selesai
+                // Simulasi tantangan selesai untuk testing
                 widget.onChallengeCompleted();
                 Navigator.pop(context);
               },
-              child: const Text('Selesai (Simulasi)'),
+              child: const Text('Skip (Testing)'),
             ),
           ],
         ),
@@ -55,5 +137,3 @@ class _PuzzleChallengeScreenState extends State<PuzzleChallengeScreen> {
     );
   }
 }
-
-

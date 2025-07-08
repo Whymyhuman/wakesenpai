@@ -29,7 +29,8 @@ class DatabaseService {
       
       _isInitialized = true;
     } catch (e) {
-      print('Error initializing database: $e');
+      // Handle error silently or use proper logging
+      _isInitialized = false;
     }
   }
 
@@ -58,5 +59,11 @@ class DatabaseService {
 
   Future<void> saveUserStats(UserStats userStats) async {
     await _userStatsBox?.put('user_stats', userStats);
+  }
+
+  Future<void> close() async {
+    await _alarmBox?.close();
+    await _userStatsBox?.close();
+    _isInitialized = false;
   }
 }

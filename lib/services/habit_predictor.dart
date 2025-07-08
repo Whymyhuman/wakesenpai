@@ -5,9 +5,9 @@ class HabitPredictorService {
   Future<void> loadModel() async {
     try {
       // TODO: Implementasi loading model TFLite
-      print('Loading habit prediction model...');
+      // Loading habit prediction model...
     } catch (e) {
-      print('Gagal memuat model TensorFlow Lite: $e');
+      // Handle error: Gagal memuat model TensorFlow Lite
     }
   }
 
@@ -21,6 +21,6 @@ class HabitPredictorService {
 
   void dispose() {
     // TODO: Cleanup resources
-    // print('Disposing habit predictor service');
+    // Disposing habit predictor service
   }
 }

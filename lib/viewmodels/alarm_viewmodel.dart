@@ -26,7 +26,7 @@ class AlarmViewModel extends ChangeNotifier {
       await _alarmService.init();
       _alarms = _db.getAlarms();
     } catch (e) {
-      print('Error loading alarms: $e');
+      // Handle error loading alarms
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 import '../models/alarm.dart';
 
 class AlarmService {
@@ -14,7 +15,7 @@ class AlarmService {
     if (_isInitialized) return;
 
     // Initialize timezone
-    tz.initializeTimeZones();
+    tz_data.initializeTimeZones();
     
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(

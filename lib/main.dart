@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/database_service.dart';
+import 'services/alarm_service.dart';
 import 'viewmodels/alarm_viewmodel.dart';
 import 'views/home_screen.dart';
 
@@ -9,6 +10,9 @@ void main() async {
   
   // Initialize database
   await DatabaseService.instance.init();
+  
+  // Initialize alarm service
+  await AlarmService.instance.init();
   
   runApp(const MyApp());
 }

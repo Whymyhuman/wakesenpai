@@ -47,7 +47,7 @@ class _GestureChallengeScreenState extends State<GestureChallengeScreen> {
         }
       },
       onError: (error) {
-        print('Accelerometer error: $error');
+        // Handle accelerometer error
       },
     );
   }

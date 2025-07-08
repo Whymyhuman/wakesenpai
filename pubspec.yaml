@@ -94,3 +94,7 @@ flutter:
     - assets/audio/
     - assets/tflite/
 
+
+
+# Perbaikan simulasi untuk pubspec.yaml
+

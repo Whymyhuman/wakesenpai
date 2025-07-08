@@ -54,3 +54,7 @@ class AlarmAdapter extends TypeAdapter<Alarm> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+
+// Perbaikan simulasi untuk alarm.g.dart
+

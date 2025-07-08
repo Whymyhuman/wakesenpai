@@ -1,18 +1,17 @@
-
 import 'package:hive/hive.dart';
 
 part 'user_stats.g.dart';
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 1)
 class UserStats extends HiveObject {
   @HiveField(0)
-  late int xp;
+  int xp;
 
   @HiveField(1)
-  late List<String> unlockedIllustrations;
+  List<String> unlockedIllustrations;
 
   @HiveField(2)
-  late List<String> unlockedSounds;
+  List<String> unlockedSounds;
 
   UserStats({
     required this.xp,
@@ -20,5 +19,3 @@ class UserStats extends HiveObject {
     required this.unlockedSounds,
   });
 }
-
-

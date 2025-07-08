@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wake_senpai/models/alarm.dart';
-import 'package:wake_senpai/viewmodels/alarm_viewmodel.dart';
-import 'package:wake_senpai/views/alarm_edit_screen.dart';
+import '../viewmodels/alarm_viewmodel.dart';
+import 'alarm_edit_screen.dart';
+import 'wake_screen.dart';
 
 class AlarmListScreen extends StatelessWidget {
   const AlarmListScreen({super.key});
@@ -12,27 +12,69 @@ class AlarmListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Daftar Alarm'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
       body: Consumer<AlarmViewModel>(
-        builder: (context, alarmViewModel, child) {
-          if (alarmViewModel.alarms.isEmpty) {
-            return const Center(
-              child: Text('Belum ada alarm. Tambahkan alarm baru!'),
+        builder: (context, viewModel, child) {
+          if (viewModel.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (viewModel.alarms.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.alarm_off,
+                    size: 80,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Belum ada alarm',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Tap tombol + untuk menambah alarm baru',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
             );
           }
+
           return ListView.builder(
-            itemCount: alarmViewModel.alarms.length,
+            padding: const EdgeInsets.all(16),
+            itemCount: viewModel.alarms.length,
             itemBuilder: (context, index) {
-              final alarm = alarmViewModel.alarms[index];
+              final alarm = viewModel.alarms[index];
               return Card(
-                margin: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
                   title: Text(
-                    '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    alarm.timeString,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  subtitle: Text(
-                    alarm.isRepeatingDaily ? 'Setiap Hari' : 'Satu Kali',
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(alarm.isRepeatingDaily ? 'Setiap Hari' : 'Satu Kali'),
+                      Text('Tantangan: ${alarm.challengeType}'),
+                    ],
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -40,24 +82,46 @@ class AlarmListScreen extends StatelessWidget {
                       Switch(
                         value: alarm.isActive,
                         onChanged: (value) {
-                          alarmViewModel.toggleAlarm(alarm);
+                          viewModel.toggleAlarm(alarm);
                         },
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AlarmEditScreen(alarm: alarm),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          alarmViewModel.deleteAlarm(alarm.id);
+                      PopupMenuButton(
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'test',
+                            child: Text('Test Alarm'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Hapus'),
+                          ),
+                        ],
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'test':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WakeScreen(alarm: alarm),
+                                ),
+                              );
+                              break;
+                            case 'edit':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AlarmEditScreen(alarm: alarm),
+                                ),
+                              );
+                              break;
+                            case 'delete':
+                              _showDeleteDialog(context, viewModel, alarm.id);
+                              break;
+                          }
                         },
                       ),
                     ],
@@ -73,14 +137,36 @@ class AlarmListScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AlarmEditScreen(),
+              builder: (context) => const AlarmEditScreen(),
             ),
           );
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, AlarmViewModel viewModel, int alarmId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus Alarm'),
+        content: const Text('Apakah Anda yakin ingin menghapus alarm ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () {
+              viewModel.deleteAlarm(alarmId);
+              Navigator.pop(context);
+            },
+            child: const Text('Hapus'),
+          ),
+        ],
       ),
     );
   }
 }
-
-

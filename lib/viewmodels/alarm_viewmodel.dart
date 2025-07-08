@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wake_senpai/models/alarm.dart';
-import 'package:wake_senpai/services/alarm_service.dart';
-import 'package:wake_senpai/services/local_db_service.dart';
+import '../models/alarm.dart';
+import '../services/database_service.dart';
+import '../services/alarm_service.dart';
 
 class AlarmViewModel extends ChangeNotifier {
+  final DatabaseService _db = DatabaseService.instance;
   final AlarmService _alarmService = AlarmService.instance;
-  final LocalDbService _localDbService = LocalDbService.instance;
 
   List<Alarm> _alarms = [];
   List<Alarm> get alarms => _alarms;
@@ -22,69 +22,59 @@ class AlarmViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _localDbService.init();
+      await _db.init();
       await _alarmService.init();
-      _alarms = _localDbService.getAlarms();
+      _alarms = _db.getAlarms();
     } catch (e) {
       print('Error loading alarms: $e');
-      _alarms = [];
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> addAlarm(TimeOfDayCustom time, bool isRepeatingDaily, String soundPath, String challengeType) async {
-    try {
-      final newAlarm = Alarm(
-        id: DateTime.now().millisecondsSinceEpoch,
-        time: time,
-        isActive: true,
-        isRepeatingDaily: isRepeatingDaily,
-        soundPath: soundPath,
-        challengeType: challengeType,
-      );
-      
-      _alarms.add(newAlarm);
-      await _localDbService.saveAlarm(newAlarm);
-      await _alarmService.scheduleAlarm(newAlarm);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding alarm: $e');
-    }
+  Future<void> addAlarm({
+    required int hour,
+    required int minute,
+    required bool isRepeatingDaily,
+    required String soundPath,
+    required String challengeType,
+  }) async {
+    final alarm = Alarm(
+      id: DateTime.now().millisecondsSinceEpoch,
+      hour: hour,
+      minute: minute,
+      isActive: true,
+      isRepeatingDaily: isRepeatingDaily,
+      soundPath: soundPath,
+      challengeType: challengeType,
+    );
+
+    _alarms.add(alarm);
+    await _db.saveAlarm(alarm);
+    await _alarmService.scheduleAlarm(alarm);
+    notifyListeners();
   }
 
   Future<void> updateAlarm(Alarm alarm) async {
-    try {
-      await _localDbService.saveAlarm(alarm);
-      if (alarm.isActive) {
-        await _alarmService.scheduleAlarm(alarm);
-      } else {
-        await _alarmService.cancelAlarm(alarm.id);
-      }
-      notifyListeners();
-    } catch (e) {
-      print('Error updating alarm: $e');
+    await _db.saveAlarm(alarm);
+    if (alarm.isActive) {
+      await _alarmService.scheduleAlarm(alarm);
+    } else {
+      await _alarmService.cancelAlarm(alarm.id);
     }
+    notifyListeners();
   }
 
   Future<void> deleteAlarm(int id) async {
-    try {
-      _alarms.removeWhere((alarm) => alarm.id == id);
-      await _localDbService.deleteAlarm(id);
-      await _alarmService.cancelAlarm(id);
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting alarm: $e');
-    }
+    _alarms.removeWhere((alarm) => alarm.id == id);
+    await _db.deleteAlarm(id);
+    await _alarmService.cancelAlarm(id);
+    notifyListeners();
   }
 
   void toggleAlarm(Alarm alarm) {
     alarm.isActive = !alarm.isActive;
     updateAlarm(alarm);
-  }
-
-  Future<void> refresh() async {
-    await _loadAlarms();
   }
 }

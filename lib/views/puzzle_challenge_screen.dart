@@ -10,7 +10,7 @@ class PuzzleChallengeScreen extends StatefulWidget {
 }
 
 class _PuzzleChallengeScreenState extends State<PuzzleChallengeScreen> {
-  List<int> puzzlePieces = [1, 2, 3, 4, 5, 6, 7, 8, 0]; // 0 represents empty space
+  List<int> puzzlePieces = [1, 2, 3, 4, 5, 6, 7, 8, 0];
   List<int> correctOrder = [1, 2, 3, 4, 5, 6, 7, 8, 0];
   
   @override
@@ -27,19 +27,15 @@ class _PuzzleChallengeScreenState extends State<PuzzleChallengeScreen> {
   void _movePiece(int index) {
     int emptyIndex = puzzlePieces.indexOf(0);
     
-    // Check if the tapped piece is adjacent to empty space
     if (_isAdjacent(index, emptyIndex)) {
       setState(() {
-        // Swap the piece with empty space
         int temp = puzzlePieces[index];
         puzzlePieces[index] = puzzlePieces[emptyIndex];
         puzzlePieces[emptyIndex] = temp;
       });
       
-      // Check if puzzle is solved
       if (_isPuzzleSolved()) {
         widget.onChallengeCompleted();
-        Navigator.pop(context);
       }
     }
   }
@@ -69,17 +65,13 @@ class _PuzzleChallengeScreenState extends State<PuzzleChallengeScreen> {
       appBar: AppBar(
         title: const Text('Tantangan Puzzle'),
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _shufflePuzzle,
-          ),
-        ],
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             const Text(
               'Susun angka 1-8 dengan benar!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -125,9 +117,7 @@ class _PuzzleChallengeScreenState extends State<PuzzleChallengeScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Simulasi tantangan selesai untuk testing
                 widget.onChallengeCompleted();
-                Navigator.pop(context);
               },
               child: const Text('Skip (Testing)'),
             ),

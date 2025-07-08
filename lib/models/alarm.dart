@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:flutter/material.dart' as material;
 
 part 'alarm.g.dart';
 
@@ -33,8 +32,12 @@ class Alarm extends HiveObject {
   });
 }
 
-class TimeOfDayCustom {
+@HiveType(typeId: 1)
+class TimeOfDayCustom extends HiveObject {
+  @HiveField(0)
   final int hour;
+
+  @HiveField(1)
   final int minute;
 
   TimeOfDayCustom({required this.hour, required this.minute});
@@ -48,9 +51,7 @@ class TimeOfDayCustom {
         hour: json['hour'],
         minute: json['minute'],
       );
+
+  @override
+  String toString() => '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 }
-
-
-
-
-
